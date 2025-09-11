@@ -19,8 +19,8 @@ int main() {
     Hammer* hammer1 = new Hammer();
     
     std::cout << "\n--- Initial tool status ---" << std::endl;
-    // std::cout << "Shovel IsAlreadyOwn: " << shovel1->getIsAlreadyOwn() << std::endl;
-    // std::cout << "Hammer IsAlreadyOwn: " << hammer1->getIsAlreadyOwn() << std::endl;
+    std::cout << "Shovel IsAlreadyOwn: " << shovel1->getIsAlreadyOwn() << std::endl;
+    std::cout << "Hammer IsAlreadyOwn: " << hammer1->getIsAlreadyOwn() << std::endl;
     
     // Give tools to worker1
     std::cout << "\n--- Giving tools to worker1 ---" << std::endl;
@@ -29,8 +29,8 @@ int main() {
     worker1.displayWorker();
     
     std::cout << "\n--- Tool status after giving to worker1 ---" << std::endl;
-    // std::cout << "Shovel IsAlreadyOwn: " << shovel1->getIsAlreadyOwn() << std::endl;
-    // std::cout << "Hammer IsAlreadyOwn: " << hammer1->getIsAlreadyOwn() << std::endl;
+    std::cout << "Shovel IsAlreadyOwn: " << shovel1->getIsAlreadyOwn() << std::endl;
+    std::cout << "Hammer IsAlreadyOwn: " << hammer1->getIsAlreadyOwn() << std::endl;
     
     // Test tool usage
     std::cout << "\n--- Testing tool usage ---" << std::endl;
@@ -117,7 +117,7 @@ int main() {
     for (size_t i = 0; i < worker3Tools.size(); ++i) {
         std::cout << "Tool " << i << ": ";
         worker3Tools[i]->use();
-        // std::cout << "IsAlreadyOwn: " << worker3Tools[i]->getIsAlreadyOwn() << std::endl;
+        std::cout << "IsAlreadyOwn: " << worker3Tools[i]->getIsAlreadyOwn() << std::endl;
     }
     
     // ========== CLEANUP TEST ==========

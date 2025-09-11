@@ -39,14 +39,15 @@ class Tool
     protected:
 
     int _numberOfUses;
+    int _isAlreadyOwn;
     Worker* _currentOwner;
-
     public:
-    Tool(int use = 0) : _numberOfUses(use), _currentOwner(NULL) 
+    Tool(int use = 0) : _numberOfUses(use), _isAlreadyOwn(0), _currentOwner(NULL)
     {
         std::cout << "Tool created" << std::endl;
     };
-
+    void   setIsAlreadyOwn(int val) { _isAlreadyOwn = val; };
+    bool getIsAlreadyOwn() const { return _isAlreadyOwn; };
     
     virtual ~Tool()
     {
@@ -125,6 +126,7 @@ class Worker {
             }
             _tools.push_back(tool);
             tool->setOwner(this);
+            tool->setIsAlreadyOwn(1);
             }
     }
 
