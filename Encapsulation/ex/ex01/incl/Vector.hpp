@@ -46,7 +46,6 @@ class Vector2
     ~Vector2(){};
 };
 
-// Vector2::~Vector2(){}
 
 
 class Graph
@@ -57,6 +56,8 @@ private:
 
     bool isValidPoint(const Vector2 &point) const;
     bool pointExists(const Vector2 &point) const;
+    // void drawAxis() const;
+    // void drawGrid() const;
 
 public:
     
