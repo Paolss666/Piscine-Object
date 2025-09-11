@@ -8,6 +8,7 @@ int main()
         graph.addPoint(Vector2(2.0f, 3.0f));
         graph.addPoint(Vector2(5.0f, 5.0f));
         graph.addPoint(Vector2(7.0f, 8.0f));
+        graph.addPoint(Vector2(8.3f, 8.3f));
         graph.displayWithCoordinates();
 
         std::cout << "\nRemoving point (5, 5):" << std::endl;
