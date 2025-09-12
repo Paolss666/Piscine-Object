@@ -12,7 +12,7 @@ class Gear {
 
 class "Singleton<T*>" as Singleton{
     - instance: T*
-    - Singleton()
+    - Singleton() // private constructor
     + getInstance(): T*
 }
 
@@ -86,7 +86,7 @@ class BrakeController{
 
 class Cockpit {
     - pedal: Pedal
-    - steeringWheel: SteerWheel
+    - steerWheel: SteerWheel
     - gearLever: GearLever
     + managePedal(): void
     + manageSteerWheel(): void
@@ -106,12 +106,13 @@ class Car {
     - transmission : Transmission
 }
 
-
+/' Inheritance and Implementation '/
 GearLever --|> Singleton: inherits from\nSigleton<GearLever>
 Injector--|> LinkablePart: implements\nLinkablePart
 BrakeController --|> LinkablePart: implements\nLinkablePart
 
 
+/' Composition and Aggregation '/
 Car *-- BrakeController
 Car *-- Direction
 Car *-- Transmission
@@ -123,19 +124,21 @@ Motor *-- Injector
 Motor *-- ExplosionChamber
 Motor *-- Crankshaft
 
+
 Cockpit *-- Pedal
 Cockpit *-- SteerWheel
 Cockpit *-- GearLever
+
 
 GearLever *-- Gear
 Direction *-- Wheel
 BrakeController *-- Brake
 Electronics *-- DAE
 
-
+/' Associations '/
 Transmission o-- Wheel
 
-
+/' Dependencies '/
 Crankshaft --> Transmission
 ExplosionChamber --> Crankshaft
 Injector --> ExplosionChamber
@@ -145,4 +148,4 @@ SteerWheel --> DAE
 DAE --> Direction
 
 
-@enduml
+@enduml 
