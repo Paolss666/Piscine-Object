@@ -1,0 +1,148 @@
+@startuml Subject
+
+abstract class LinkablePart {
+    + {abstract} execute(p_pression: float): void
+}
+class Wheel {
+    + executeRotation(p_force: float): void
+}
+class Gear {
+    - demultiplier: int
+}
+
+class "Singleton<T*>" as Singleton{
+    - instance: T*
+    - Singleton()
+    + getInstance(): T*
+}
+
+
+class GearLever{
+    - gears: Gear[]
+    - level: int
+    + change(): void
+    + activeGear(): Gear*
+}
+
+class Transmission {
+    -wheels: vector<Wheel*>
+    +activate(p_force: float): void
+}
+
+class Crankshaft {
+    - transmission: Transmission*
+    + receiveForce(p_volume: float): void
+}
+
+class ExplosionChamber{
+    - crankshaft: Crankshaft*
+    + fill(p_volume: float): void
+}
+
+class Injector {
+    - explosionChamber: ExplosionChamber*
+    + execute(p_pression: float): void
+}
+
+class Motor {
+    - injector: Injector
+    - explosionChamber: ExplosionChamber
+    - crankshaft: Crankshaft
+    + connectToTransmission(p_transmission: Transmission*): void
+}
+
+class Pedal {
+    - linkedPart: LinkablePart*
+    + setTarget(p_part: LinkablePart*): void
+    + use(p_pression: float): void
+}
+
+class Direction{
+    - wheels: Wheel[]
+    + turn(p_angle: float): void
+}
+
+class DAE {
+    - direction: Direction*
+    - force: float
+    + use(p_angle: float): void 
+}
+
+class SteerWheel{
+    - dae: DAE*
+    + turn(p_angle: float): void
+}
+
+class Brake {
+    - wheel: Wheel*
+    + execute(p_force: float): void
+    + attackWheel(p_wheel: Wheel*): void
+}
+
+class BrakeController{
+    - linkedBrakes: Brake[]
+    + execute(p_pression: float): void
+}
+
+class Cockpit {
+    - pedal: Pedal
+    - steeringWheel: SteerWheel
+    - gearLever: GearLever
+    + managePedal(): void
+    + manageSteerWheel(): void
+    + manageGearLever(): void
+}
+
+class Electronics {
+    - dae : DAE*
+}
+
+class Car {
+    - brakeController: BrakeController
+    - direction : Direction
+    - cockpit : Cockpit
+    - electronics : Electronics
+    - motor : Motor
+    - transmission : Transmission
+}
+
+
+GearLever --|> Singleton: inherits from\nSigleton<GearLever>
+Injector--|> LinkablePart: implements\nLinkablePart
+BrakeController --|> LinkablePart: implements\nLinkablePart
+
+
+Car *-- BrakeController
+Car *-- Direction
+Car *-- Transmission
+Car *-- Motor
+Car *-- Electronics
+Car *-- Cockpit
+
+Motor *-- Injector
+Motor *-- ExplosionChamber
+Motor *-- Crankshaft
+
+Cockpit *-- Pedal
+Cockpit *-- SteerWheel
+Cockpit *-- GearLever
+
+GearLever *-- Gear
+Direction *-- Wheel
+BrakeController *-- Brake
+Electronics *-- DAE
+
+
+Transmission o-- Wheel
+
+
+Crankshaft --> Transmission
+ExplosionChamber --> Crankshaft
+Injector --> ExplosionChamber
+Pedal --> LinkablePart
+Brake --> Wheel
+SteerWheel --> DAE
+DAE --> Direction
+
+
+@enduml
