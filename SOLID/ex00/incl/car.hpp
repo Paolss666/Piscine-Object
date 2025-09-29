@@ -8,6 +8,9 @@
 #ifndef CAR_HPP
 #define CAR_HPP
 
+//Single responsability principle
+//Class should have only one reason to change
+
 class Car{
 
 private:

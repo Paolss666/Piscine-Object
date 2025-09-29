@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 
+// OPEN/CLOSED principle
+// Classes should be open for extension, but closed for modification
+
 class Client{
     private:
         std::string _name;
