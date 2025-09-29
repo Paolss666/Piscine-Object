@@ -30,6 +30,9 @@ public:
         }
         _workedHours += hours;
     }
+    virtual int getMobilizedHours() const {
+        return _mobilizedHours;
+    }
 
     virtual int getLoggedHours() const {
         return _workedHours;

@@ -67,7 +67,4 @@ public:
     // virtual int getMobilizedHours() const = 0;
 };
 
-
-
-
 #endif
