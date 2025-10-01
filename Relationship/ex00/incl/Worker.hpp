@@ -4,10 +4,12 @@
 #include <iostream>
 #include <vector>
 /* Position structure */
+/* DIFF ASS/AGGR --> worker can have multiple tool but  */
+/* ASSOCIATION -> Worker has-a Tool (tools can exist independently)  --> Worker contains a pointer to Tool, but Tool can exist independently of Worker */
 /* COMPOSITION -> Worker has-a Position and Statistic  --> Worker contains Position and Statistic as member variables */
 /* AGGREGATION -> Shovel has-a Workers (workers can exist independently)  --> Shovel contains a pointer to Worker, but Worker can exist independently of Shovel  */
-/* INHERITANCE -> Manager is-a Worker  --> Manager is a subclass of Worker and inherits its properties and methods*/ 
-/* DEPENDENCY -> Workshop uses Worker (temporary relationship)  --> Workshop has methods that take Worker as parameters, indicating a temporary relationship */
+/* INHERITANCE -> Manager is-a Worker  --> Manager is a subclass of Worker and inherits its properties and methods*/
+/* DEPENDENCY -> Workshop uses Worker (temporary relationship)  --> Workshop has methods that take Worker as parameters, indicating a temporary relationship) */
 
 //COMPOSITION
 struct Position
@@ -52,6 +54,7 @@ class Tool
     
     virtual ~Tool()
     {
+        // _currentOwner = NULL;
         std::cout << "Tool destroyed" << std::endl;
     };
     virtual void use() = 0;
@@ -111,6 +114,20 @@ class Worker {
     Statistic _stat;
     std::vector<Tool*> _tools;
     std::vector<Workshop*> _workshops;
+    Tool* takenTool(Tool* tool)
+    {
+        std::vector<Tool*>::iterator it = _tools.begin();
+        for (; it != _tools.end(); ++it)
+        {
+            if (*it == tool)
+            {
+                _tools.erase(it);
+                tool->setOwner(NULL);
+                return tool;
+            }
+        }
+        return NULL;
+    }
 
     public:
     std::vector<Tool*> getTools() const { return _tools; };
@@ -128,21 +145,6 @@ class Worker {
             tool->setOwner(this);
             tool->setIsAlreadyOwn(1);
             }
-    }
-
-    Tool* takenTool(Tool* tool)
-    {
-        std::vector<Tool*>::iterator it = _tools.begin();
-        for (; it != _tools.end(); ++it)
-        {
-            if (*it == tool)
-            {
-                _tools.erase(it);
-                tool->setOwner(NULL);
-                return tool;
-            }
-        }
-        return NULL;
     }
     Worker(): _pos(), _stat(), _tools()
     {
@@ -166,6 +168,14 @@ class Worker {
 
     ~Worker()
     {
+        while (!_tools.empty())
+        {
+            Tool* tool = _tools.back();
+            tool->setOwner(NULL);
+            tool->setIsAlreadyOwn(0);
+            _tools.pop_back();
+        }
+        // _tools.clear();
         for (size_t i = 0; i < _workshops.size(); ++i)
         {
             leaveWorkShop(*_workshops[i]);
@@ -201,7 +211,7 @@ class Worker {
     // void doWork();
 };
 
-inline void Worker::joinWorkShop(Workshop &workshop)
+void Worker::joinWorkShop(Workshop &workshop)
 {
     std::vector<Workshop*>::iterator it = _workshops.begin();
     for (; it != _workshops.end(); ++it)
@@ -213,12 +223,11 @@ inline void Worker::joinWorkShop(Workshop &workshop)
         }
     }
     _workshops.push_back(&workshop);
-    // workshop.registerWorker(*this);
     std::cout << "Joined workshop" << std::endl;
 }
 
 
-inline void Worker::leaveWorkShop(Workshop &workshop)
+void Worker::leaveWorkShop(Workshop &workshop)
 {
     std::vector<Workshop*>::iterator it = _workshops.begin();
     for (; it != _workshops.end(); ++it)
@@ -226,7 +235,6 @@ inline void Worker::leaveWorkShop(Workshop &workshop)
         if (*it == &workshop)
         {
             _workshops.erase(it);
-            // workshop.releaseWorker(*this);
             std::cout << "Left workshop" << std::endl;
             return;
         }
