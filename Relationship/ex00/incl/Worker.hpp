@@ -4,9 +4,10 @@
 #include <iostream>
 #include <vector>
 /* Position structure */
-/* COMPOSITION -> Worker has-a Position and Statistic */
-/* AGGREGATION -> Shovel has-a Workers (workers can exist independently) */
-/* INHERITANCE -> Manager is-a Worker */
+/* COMPOSITION -> Worker has-a Position and Statistic  --> Worker contains Position and Statistic as member variables */
+/* AGGREGATION -> Shovel has-a Workers (workers can exist independently)  --> Shovel contains a pointer to Worker, but Worker can exist independently of Shovel  */
+/* INHERITANCE -> Manager is-a Worker  --> Manager is a subclass of Worker and inherits its properties and methods*/ 
+/* DEPENDENCY -> Workshop uses Worker (temporary relationship)  --> Workshop has methods that take Worker as parameters, indicating a temporary relationship */
 
 //COMPOSITION
 struct Position
@@ -33,7 +34,7 @@ struct Statistic
 class Worker;
 class Workshop;
 
-//INHERITANCE
+
 class Tool
 {
     protected:
@@ -59,7 +60,7 @@ class Tool
     int getNumberOfUses() const { return _numberOfUses; };
 };
 
-//AGGREGATION
+
 class Shovel : public Tool
 {
 
@@ -103,7 +104,6 @@ class Hammer : public Tool
     };
 };
 
-// class Workshop;
 
 class Worker {
     private:
@@ -201,7 +201,6 @@ class Worker {
     // void doWork();
 };
 
-// association methods
 inline void Worker::joinWorkShop(Workshop &workshop)
 {
     std::vector<Workshop*>::iterator it = _workshops.begin();
@@ -301,17 +300,5 @@ class Workshop
         }
     }
 };
-
-
-
-// void work(){
-//     std::cout << "Working..." << std::endl;
-//     if (work)
-// }
-// std::vector<Tool *> getAllToolsOfWorker(const Worker &worker)
-// {
-    // return worker.getTools();
-// }
-// 
 
 #endif
