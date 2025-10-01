@@ -80,8 +80,15 @@ class Shovel : public Tool
     };
     void use()
     {
-        _numberOfUses++;
-        std::cout << "Shovel used " << _numberOfUses << " times." << std::endl;
+        if (_currentOwner)
+        {
+            _numberOfUses++;
+            std::cout << "Shovel used " << _numberOfUses << " times." << std::endl;
+        }
+        else
+        {
+            std::cout << "Shovel has no owner, cannot be used." << std::endl;
+        }
     };
 };
 
@@ -102,8 +109,15 @@ class Hammer : public Tool
     void use()
 
     {
-        _numberOfUses++;
-        std::cout << "Hammer used " << _numberOfUses << " times." << std::endl;
+        if (_currentOwner)
+        {
+            _numberOfUses++;
+            std::cout << "Hammer used " << _numberOfUses << " times." << std::endl;
+        }
+        else
+        {
+            std::cout << "Hammer has no owner, cannot be used." << std::endl;
+        }
     };
 };
 

@@ -37,6 +37,10 @@ int main() {
     shovel1->use();
     hammer1->use();
     
+
+    shovel1->use();
+    hammer1->use();
+
     // Create second worker
     std::cout << "\n--- Creating second worker ---" << std::endl;
     Worker* worker2 = new Worker(100, 200, 300, 10, 500);
@@ -137,13 +141,14 @@ int main() {
     std::cout << "\n--- Deleting tempWorker (should not delete tools) ---" << std::endl;
     delete tempWorker;
     worker1->giveTool(shovel1); // Reassign shovel1 back to worker1
-    // worker1->giveTool(hammer1); // Reassign hammer1 back to worker1
+    hammer1->use();
     std::cout << "After deleting tempWorker:" << std::endl;
 
     shovel1->getOwner() ? std::cout << "Shovel1 owner exists." << std::endl : std::cout << "Shovel1 has no owner." << std::endl;
     hammer1->getOwner() ? std::cout << "Hammer1 owner exists." << std::endl : std::cout << "Hammer1 has no owner." << std::endl;
     // Clean up tools (aggregation - tools survive worker destruction)
     std::cout << "\n--- Deleting tools ---" << std::endl;
+   
     delete worker1;
     delete worker2;
     delete worker3;
