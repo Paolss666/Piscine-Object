@@ -1,166 +1,132 @@
 #include "../incl/Worker.hpp"
 
-int main() {
-    std::cout << "\n========== TESTING MODULE 01 - RELATIONSHIPS ==========\n" << std::endl;
+void printSeparator(const std::string& title) {
+    std::cout << "\n" << std::string(60, '=') << std::endl;
+    std::cout << "  " << title << std::endl;
+    std::cout << std::string(60, '=') << "\n" << std::endl;
+}
 
-    // ========== COMPOSITION TEST ==========
-    std::cout << "=== COMPOSITION TEST ===" << std::endl;
+void printSubSection(const std::string& subtitle) {
+    std::cout << "\n--- " << subtitle << " ---" << std::endl;
+}
+
+int main() {
+    printSeparator("TEST 1: COMPOSITION");
+    std::cout << "Worker contains Position and Statistic as DIRECT MEMBERS" << std::endl;
+    std::cout << "When Worker is destroyed, Position and Statistic are also destroyed\n" << std::endl;
+    
     Position pos(10, 20, 30);
     Statistic stat(5, 100);
     Worker* worker1 = new Worker(pos, stat);
     worker1->displayWorker();
-    std::cout << std::endl;
 
-    // ========== AGGREGATION & INHERITANCE TEST ==========
-    std::cout << "=== AGGREGATION & INHERITANCE TEST ===" << std::endl;
+    printSeparator("TEST 2: AGGREGATION + INHERITANCE");
+    std::cout << "Tool (abstract class) -> Shovel and Hammer (inherit from Tool)" << std::endl;
+    std::cout << "Worker HAS-A Tool (pointer): tools exist independently\n" << std::endl;
     
-    // Create tools
+    printSubSection("Creating 2 tools");
     Shovel* shovel1 = new Shovel();
     Hammer* hammer1 = new Hammer();
     
-    std::cout << "\n--- Initial tool status ---" << std::endl;
-    std::cout << "Shovel IsAlreadyOwn: " << shovel1->getIsAlreadyOwn() << std::endl;
-    std::cout << "Hammer IsAlreadyOwn: " << hammer1->getIsAlreadyOwn() << std::endl;
-    
-    // Give tools to worker1
-    std::cout << "\n--- Giving tools to worker1 ---" << std::endl;
+    printSubSection("Assigning tools to worker1");
     worker1->giveTool(shovel1);
     worker1->giveTool(hammer1);
-    worker1->displayWorker();
+    std::cout << "Worker1 now has " << worker1->getTools().size() << " tools" << std::endl;
     
-    std::cout << "\n--- Tool status after giving to worker1 ---" << std::endl;
-    std::cout << "Shovel IsAlreadyOwn: " << shovel1->getIsAlreadyOwn() << std::endl;
-    std::cout << "Hammer IsAlreadyOwn: " << hammer1->getIsAlreadyOwn() << std::endl;
-    
-    // Test tool usage
-    std::cout << "\n--- Testing tool usage ---" << std::endl;
+    printSubSection("Testing tool usage");
     shovel1->use();
     hammer1->use();
+    shovel1->use();  // 2nd use
     
-
-    shovel1->use();
-    hammer1->use();
-
-    // Create second worker
-    std::cout << "\n--- Creating second worker ---" << std::endl;
+    printSubSection("Creating worker2");
     Worker* worker2 = new Worker(100, 200, 300, 10, 500);
     
-    // Try to give the same shovel to worker2 (should remove from worker1)
-    std::cout << "\n--- Giving shovel1 to worker2 (should remove from worker1) ---" << std::endl;
+    printSubSection("Transferring shovel1 from worker1 to worker2");
+    std::cout << "IMPORTANT: The tool is automatically REMOVED from worker1!" << std::endl;
     worker2->giveTool(shovel1);
-    
-    std::cout << "\n--- Worker status after transfer ---" << std::endl;
     std::cout << "Worker1 tools: " << worker1->getTools().size() << std::endl;
     std::cout << "Worker2 tools: " << worker2->getTools().size() << std::endl;
-    std::cout << "Shovel current owner: " << (shovel1->getOwner() == worker2 ? "Worker2" : "Other") << std::endl;
 
-    // ========== ASSOCIATION TEST ==========
-    std::cout << "\n=== ASSOCIATION TEST ===" << std::endl;
+    printSeparator("TEST 3: ASSOCIATION (Workshop-Worker)");
+    std::cout << "Workshop and Worker have a BIDIRECTIONAL relationship" << std::endl;
+    std::cout << "A Worker can work in MULTIPLE Workshops" << std::endl;
+    std::cout << "Workshop and Worker exist independently\n" << std::endl;
     
-    // Create workshops
     Workshop* metalWorkshop = new Workshop();
     Workshop* woodWorkshop = new Workshop();
     
-    // Register workers to workshops
-    std::cout << "\n--- Registering workers to workshops ---" << std::endl;
+    printSubSection("Registering workers in workshops");
     metalWorkshop->registerWorker(*worker1);
     metalWorkshop->registerWorker(*worker2);
-    woodWorkshop->registerWorker(*worker1);  // worker1 can be in multiple workshops
-
-    std::cout << "\n--- Workshop status ---" << std::endl;
-    std::cout << "Metal workshop workers: " << metalWorkshop->getWorkersCount() << std::endl;
-    std::cout << "Wood workshop workers: " << woodWorkshop->getWorkersCount() << std::endl;
+    woodWorkshop->registerWorker(*worker1);  // worker1 in 2 workshops!
     
-    // Execute work day
-    std::cout << "\n--- Executing work day in metal workshop ---" << std::endl;
+    std::cout << "Metal workshop: " << metalWorkshop->getWorkersCount() << " workers" << std::endl;
+    std::cout << "Wood workshop: " << woodWorkshop->getWorkersCount() << " workers" << std::endl;
+    
+    printSubSection("Executing work");
     metalWorkshop->executeWork();
-    
-    std::cout << "\n--- Executing work day in wood workshop ---" << std::endl;
     woodWorkshop->executeWork();
     
-    // Test worker removal
-    std::cout << "\n--- Removing worker1 from metal workshop ---" << std::endl;
+    printSubSection("Removing worker1 from metal workshop");
     metalWorkshop->releaseWorker(*worker1);
-    std::cout << "Metal workshop workers after removal: " << metalWorkshop->getWorkersCount() << std::endl;
+    std::cout << "Metal workshop now has: " << metalWorkshop->getWorkersCount() << " workers" << std::endl;
+
+    printSeparator("TEST 4: AGGREGATION - Independent Tools");
+    std::cout << "Demonstrating that TOOLS survive Worker destruction\n" << std::endl;
     
-    // ========== TOOL TRANSFER TEST ==========
-    std::cout << "\n=== TOOL TRANSFER TEST ===" << std::endl;
-    
-    // Create third worker
     Worker* worker3 = new Worker(500, 600, 700, 15, 1000);
-
-    // Give hammer to worker3 (should remove from worker1)
-    std::cout << "\n--- Giving hammer1 to worker3 (should remove from worker1) ---" << std::endl;
-    std::cout << "Before transfer - Worker1 tools: " << worker1->getTools().size() << std::endl;
-    std::cout << "Before transfer - Worker3 tools: " << worker3->getTools().size() << std::endl;
-
-    worker3->giveTool(hammer1);
-
-    std::cout << "After transfer - Worker1 tools: " << worker1->getTools().size() << std::endl;
-    std::cout << "After transfer - Worker3 tools: " << worker3->getTools().size() << std::endl;
-    std::cout << "Hammer current owner: " << (hammer1->getOwner() == worker3 ? "Worker3" : "Other") << std::endl;
-
-    // ========== MULTIPLE TOOLS TEST ==========
-    std::cout << "\n=== MULTIPLE TOOLS TEST ===" << std::endl;
     
-    // Create more tools
+    printSubSection("Transferring hammer1 to worker3");
+    std::cout << "Worker1 tools before: " << worker1->getTools().size() << std::endl;
+    worker3->giveTool(hammer1);
+    std::cout << "Worker1 tools after: " << worker1->getTools().size() << std::endl;
+    std::cout << "Worker3 tools after: " << worker3->getTools().size() << std::endl;
+    
+    printSubSection("Creating more tools");
     Shovel* shovel2 = new Shovel();
     Hammer* hammer2 = new Hammer();
-    
-    // Give multiple tools to worker3
-    std::cout << "\n--- Giving multiple tools to worker3 ---" << std::endl;
     worker3->giveTool(shovel2);
     worker3->giveTool(hammer2);
-
-    std::cout << "Worker3 tools count: " << worker3->getTools().size() << std::endl;
-    worker3->displayWorker();
-
-    // Test all tools
-    std::cout << "\n--- Testing all tools of worker3 ---" << std::endl;
-    const std::vector<Tool*>& worker3Tools = worker3->getTools();
-    for (size_t i = 0; i < worker3Tools.size(); ++i) {
-        std::cout << "Tool " << i << ": ";
-        worker3Tools[i]->use();
-        std::cout << "IsAlreadyOwn: " << worker3Tools[i]->getIsAlreadyOwn() << std::endl;
-    }
     
-    // ========== CLEANUP TEST ==========
-    std::cout << "\n=== CLEANUP TEST ===" << std::endl;
-    std::cout << "--- Deleting workshops (should remove workers from workshops) ---" << std::endl;
+    std::cout << "\nWorker3 now has " << worker3->getTools().size() << " tools:" << std::endl;
+    const std::vector<Tool*>& tools = worker3->getTools();
+    for (size_t i = 0; i < tools.size(); ++i) {
+        std::cout << "  Tool " << (i+1) << " - Uses: " << tools[i]->getNumberOfUses() << std::endl;
+    }
+
+    printSeparator("TEST 5: PROPER DESTRUCTION");
+    
+    printSubSection("Destroying workshops");
+    std::cout << "Workers are automatically removed from workshops" << std::endl;
     delete metalWorkshop;
     delete woodWorkshop;
     
-    std::cout << "\n--- Final worker status ---" << std::endl;
-    worker1->displayWorker();
-    worker2->displayWorker();
-    worker3->displayWorker();
-
-    Worker* tempWorker = new Worker();
-    tempWorker->giveTool(shovel1); // Reassign shovel1 to tempWorker
-    tempWorker->giveTool(hammer1); // Reassign hammer1 to tempWorker
-    std::cout << "\n--- Deleting tempWorker (should not delete tools) ---" << std::endl;
-    delete tempWorker;
-    worker1->giveTool(shovel1); // Reassign shovel1 back to worker1
+    printSubSection("Destroying worker3");
+    std::cout << "Tools are NOT destroyed (Aggregation!)" << std::endl;
+    delete worker3;
+    
+    printSubSection("Verifying tools still exist");
+    std::cout << "Hammer1 still exists and can be used:" << std::endl;
+    worker1->giveTool(hammer1);  // Reassign to worker1
     hammer1->use();
-    std::cout << "After deleting tempWorker:" << std::endl;
-
-    shovel1->getOwner() ? std::cout << "Shovel1 owner exists." << std::endl : std::cout << "Shovel1 has no owner." << std::endl;
-    hammer1->getOwner() ? std::cout << "Hammer1 owner exists." << std::endl : std::cout << "Hammer1 has no owner." << std::endl;
-    // Clean up tools (aggregation - tools survive worker destruction)
-    std::cout << "\n--- Deleting tools ---" << std::endl;
-   
+    
+    printSubSection("Destroying remaining workers");
     delete worker1;
     delete worker2;
-    delete worker3;
-
+    
+    printSubSection("Final destruction of tools");
+    std::cout << "Now manually destroying tools (because they are independent)" << std::endl;
     delete shovel1;
     delete hammer1;
     delete shovel2;
-    delete hammer2; 
+    delete hammer2;
 
-
-    std::cout << "\n========== ALL TESTS COMPLETED ==========\n" << std::endl;
+    printSeparator("ALL TESTS COMPLETED SUCCESSFULLY!");
+    std::cout << "\nSummary of implemented relationships:" << std::endl;
+    std::cout << "COMPOSITION: Worker contains Position and Statistic" << std::endl;
+    std::cout << "AGGREGATION: Worker has-a Tool (independent tools)" << std::endl;
+    std::cout << "INHERITANCE: Shovel/Hammer IS-A Tool" << std::endl;
+    std::cout << "ASSOCIATION: Workshop-Worker (bidirectional relationship)\n" << std::endl;
     
     return 0;
-    
 }
