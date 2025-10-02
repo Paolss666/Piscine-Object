@@ -1,118 +1,124 @@
 @startuml Subject
 
+/' Interface/Abstract Class '/
 abstract class LinkablePart {
-    + {abstract} execute(p_pression: float): void
+  + {abstract} execute(p_pression: float): void
 }
+
+/' Basic Components '/
 class Wheel {
-    + executeRotation(p_force: float): void
+  + executeRotation(p_force: float): void
 }
+
 class Gear {
-    - demultiplier: int
+  - demultiplier: int
 }
 
-class "Singleton<T*>" as Singleton{
-    - instance: T*
-    - Singleton() // private constructor
-    + getInstance(): T*
+/' Singleton Pattern '/
+class "Singleton<T>" as Singleton {
+  - {static} instance: T*
+  - Singleton()
+  + {static} getInstance(): T*
 }
 
-
-class GearLever{
-    - gears: Gear[]
-    - level: int
-    + change(): void
-    + activeGear(): Gear*
+class GearLever {
+  - gears: Gear[]
+  - level: int
+  + change(): void
+  + activeGear(): Gear*
 }
 
+/' Transmission System '/
 class Transmission {
-    -wheels: vector<Wheel*>
-    +activate(p_force: float): void
+  - wheels: vector<Wheel*>
+  + activate(p_force: float): void
 }
 
 class Crankshaft {
-    - transmission: Transmission*
-    + receiveForce(p_volume: float): void
+  - transmission: Transmission*
+  + receiveForce(p_volume: float): void
 }
 
-class ExplosionChamber{
-    - crankshaft: Crankshaft*
-    + fill(p_volume: float): void
+class ExplosionChamber {
+  - crankshaft: Crankshaft*
+  + fill(p_volume: float): void
 }
 
 class Injector {
-    - explosionChamber: ExplosionChamber*
-    + execute(p_pression: float): void
+  - explosionChamber: ExplosionChamber*
+  + execute(p_pression: float): void
 }
 
 class Motor {
-    - injector: Injector
-    - explosionChamber: ExplosionChamber
-    - crankshaft: Crankshaft
-    + connectToTransmission(p_transmission: Transmission*): void
+  - injector: Injector
+  - explosionChamber: ExplosionChamber
+  - crankshaft: Crankshaft
+  + connectToTransmission(p_transmission: Transmission*): void
 }
 
+/' Control Systems '/
 class Pedal {
-    - linkedPart: LinkablePart*
-    + setTarget(p_part: LinkablePart*): void
-    + use(p_pression: float): void
+  - linkedPart: LinkablePart*
+  + setTarget(p_part: LinkablePart*): void
+  + use(p_pression: float): void
 }
 
-class Direction{
-    - wheels: Wheel[]
-    + turn(p_angle: float): void
+class Direction {
+  - wheels: Wheel[]
+  + turn(p_angle: float): void
 }
 
 class DAE {
-    - direction: Direction*
-    - force: float
-    + use(p_angle: float): void 
+  - direction: Direction*
+  - force: float
+  + use(p_angle: float): void
 }
 
-class SteerWheel{
-    - dae: DAE*
-    + turn(p_angle: float): void
+class SteerWheel {
+  - dae: DAE*
+  + turn(p_angle: float): void
 }
 
 class Brake {
-    - wheel: Wheel*
-    + execute(p_force: float): void
-    + attackWheel(p_wheel: Wheel*): void
+  - wheel: Wheel*
+  + execute(p_force: float): void
+  + attackWheel(p_wheel: Wheel*): void
 }
 
-class BrakeController{
-    - linkedBrakes: Brake[]
-    + execute(p_pression: float): void
+class BrakeController {
+  - linkedBrakes: Brake[]
+  + execute(p_pression: float): void
 }
 
+/' High Level Components '/
 class Cockpit {
-    - pedal: Pedal
-    - steerWheel: SteerWheel
-    - gearLever: GearLever
-    + managePedal(): void
-    + manageSteerWheel(): void
-    + manageGearLever(): void
+  - pedal: Pedal
+  - steerWheel: SteerWheel
+  - gearLever: GearLever
+  + managePedal(): void
+  + manageSteerWheel(): void
+  + manageGearLever(): void
 }
 
 class Electronics {
-    - dae : DAE*
+  - dae: DAE*
 }
 
 class Car {
-    - brakeController: BrakeController
-    - direction : Direction
-    - cockpit : Cockpit
-    - electronics : Electronics
-    - motor : Motor
-    - transmission : Transmission
+  - brakeController: BrakeController
+  - direction: Direction
+  - cockpit: Cockpit
+  - electronics: Electronics
+  - motor: Motor
+  - transmission: Transmission
 }
 
-/' Inheritance and Implementation '/
-GearLever --|> Singleton: inherits from\nSigleton<GearLever>
-Injector--|> LinkablePart: implements\nLinkablePart
-BrakeController --|> LinkablePart: implements\nLinkablePart
+/' Inheritance '/
+GearLever --|> Singleton
+Injector ..|> LinkablePart
+BrakeController ..|> LinkablePart
 
-
-/' Composition and Aggregation '/
+/' Composition (filled diamond) '/
 Car *-- BrakeController
 Car *-- Direction
 Car *-- Transmission
@@ -124,21 +130,20 @@ Motor *-- Injector
 Motor *-- ExplosionChamber
 Motor *-- Crankshaft
 
-
 Cockpit *-- Pedal
 Cockpit *-- SteerWheel
 Cockpit *-- GearLever
 
+GearLever *-- "1..*" Gear
+Direction *-- "4" Wheel
+BrakeController *-- "1..*" Brake
 
-GearLever *-- Gear
-Direction *-- Wheel
-BrakeController *-- Brake
 Electronics *-- DAE
 
-/' Associations '/
-Transmission o-- Wheel
+/' Aggregation (hollow diamond) '/
+Transmission o-- "1..*" Wheel
 
-/' Dependencies '/
+/' Association '/
 Crankshaft --> Transmission
 ExplosionChamber --> Crankshaft
 Injector --> ExplosionChamber
@@ -146,6 +151,6 @@ Pedal --> LinkablePart
 Brake --> Wheel
 SteerWheel --> DAE
 DAE --> Direction
+Motor ..> Transmission : <<uses>>
 
-
-@enduml 
+@enduml
