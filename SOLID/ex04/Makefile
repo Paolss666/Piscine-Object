@@ -1,4 +1,4 @@
-NAME =  InterfaceSegregation
+NAME =  DependencyInversion
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -MMD -Wno-unused -std=c++98
@@ -30,10 +30,10 @@ $(NAME) : $(OBJS)
 -include $(DEPS)
 
 clean:
-		rm -rf $(OBJS_PATH)
+		rm -rf $(OBJS_PATH) log_constant.txt log_date_header.txt log_no_header.txt
 
 fclean:
-		rm -rf $(NAME) $(OBJS_PATH)
+		rm -rf $(NAME) $(OBJS_PATH) log_constant_header.txt log_date_header.txt log_no_header.txt
 	
 re: fclean
 		make all

@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include "IHeaderStrategy.hpp"
 
+// Dependency Inversion: Loggers depend on the abstraction IHeaderStrategy
+
 class FileLogger : public ILogger
 {
 private: 

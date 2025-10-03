@@ -17,7 +17,6 @@ public:
           _wrappedCommand(command), 
           _threshold(threshold), 
           _reductionAmount(reductionAmount) {
-        // Copy articles from wrapped command
         std::vector<Article*> articles = command->getArticles();
         for (size_t i = 0; i < articles.size(); ++i) {
             _articles.push_back(articles[i]);
@@ -27,7 +26,6 @@ public:
     virtual double get_total_price() const {
         double basePrice = _wrappedCommand->get_total_price();
         
-        // Apply discount only if total exceeds threshold
         if (basePrice > _threshold) {
             std::cout << "[Package Reduction Applied: -" << _reductionAmount 
                       << " euros for orders over " << _threshold << " euros]" << std::endl;
@@ -38,7 +36,6 @@ public:
     }
     
     ~PackageReductionDiscountCommand() {
-        // Don't delete articles, they belong to wrapped command
         _articles.clear();
     }
 };
