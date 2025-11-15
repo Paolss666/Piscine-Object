@@ -71,6 +71,7 @@ class Headmaster : public Staff
 {
 private:
     std::vector<Form*> _formToValidate;
+    class Secretary* _secretary;
     
 public:
     Headmaster(std::string p_name);
@@ -78,6 +79,15 @@ public:
     void receiveForm(Form* p_form);
     void signForm(Form* p_form);
     void executeForm(Form* p_form);
+    
+    // Mediator Pattern methods
+    void setSecretary(class Secretary* secretary) { _secretary = secretary; }
+    void requestCourseCreation(Professor* professor, const std::string& courseName);
+    void requestCourseSubscription(Student* student, Course* course);
+    void requestClassroom(Professor* professor);
+    void graduateStudent(Student* student, Course* course);
+    void teacherAssignToCourse(Professor* professor, Course* course);
+    void bellRing();
 };
 
 #endif // PERSON_HPP

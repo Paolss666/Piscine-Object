@@ -4,9 +4,9 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
-#include "../ex00/Person.hpp"
-#include "../ex00/Room.hpp"
-#include "../ex00/Course.hpp"
+#include "../ex00/incl/Person.hpp"
+#include "../ex00/incl/Room.hpp"
+#include "../ex00/incl/Course.hpp"
 
 // Template Singleton class to avoid code repetition
 template <typename T>

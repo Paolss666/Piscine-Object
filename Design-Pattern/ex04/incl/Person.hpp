@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "observer.hpp"
 
 class Room;
 class Form;
@@ -29,10 +30,11 @@ public:
     void sign(Form* p_form);
 };
 
-class Student : public Person
+class Student : public Person, public IObserver
 {
 private:
     std::vector<class Course*> _subscribedCourse;
+    bool _inClass;
 
 public:
     Student(std::string p_name);
@@ -42,12 +44,17 @@ public:
     void graduate(class Course* p_course);
     const std::vector<class Course*>& getSubscribedCourses() const { return _subscribedCourse; }
     void subscribeToCourse(class Course* p_course);
+    
+    // Observer pattern
+    virtual void update(Event event);
+    bool isInClass() const { return _inClass; }
 };
 
-class Professor : public Staff
+class Professor : public Staff, public IObserver
 {
 private:
     class Course* _currentCourse;
+    bool _teaching;
 
 public:
     Professor(std::string p_name);
@@ -56,6 +63,10 @@ public:
     void doClass();
     void closeCourse();
     class Course* getCurrentCourse() const { return _currentCourse; }
+    
+    // Observer pattern
+    virtual void update(Event event);
+    bool isTeaching() const { return _teaching; }
 };
 
 class Secretary : public Staff
@@ -71,6 +82,7 @@ class Headmaster : public Staff
 {
 private:
     std::vector<Form*> _formToValidate;
+    class Secretary* _secretary;
     
 public:
     Headmaster(std::string p_name);
@@ -78,6 +90,15 @@ public:
     void receiveForm(Form* p_form);
     void signForm(Form* p_form);
     void executeForm(Form* p_form);
+    
+    // Mediator Pattern methods
+    void setSecretary(class Secretary* secretary) { _secretary = secretary; }
+    void requestCourseCreation(Professor* professor, const std::string& courseName);
+    void requestCourseSubscription(Student* student, Course* course);
+    void requestClassroom(Professor* professor);
+    void graduateStudent(Student* student, Course* course);
+    void teacherAssignToCourse(Professor* professor, Course* course);
+    void bellRing();
 };
 
 #endif // PERSON_HPP
