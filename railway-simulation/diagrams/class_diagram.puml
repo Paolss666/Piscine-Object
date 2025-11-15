@@ -1,0 +1,252 @@
+@startuml Railway_Simulation_Class_Diagram
+
+title Railway Network Simulation - Class Diagram
+
+' Design Patterns Applied:
+' 1. Singleton Pattern - SimulationManager
+' 2. Strategy Pattern - IPathfindingStrategy
+' 3. Observer Pattern - IObserver/ISubject
+' 4. Factory Pattern - EventFactory
+
+package "Core Models" {
+    class Node {
+        - _name: string
+        - _connectedRails: vector<Rail*>
+        - _isCity: bool
+        + Node(name: string)
+        + getName(): string
+        + getConnectedRails(): vector<Rail*>
+        + addRail(rail: Rail*): void
+        + getRailTo(destination: Node*): Rail*
+        + isCity(): bool
+    }
+    
+    class Rail {
+        - _startNode: Node*
+        - _endNode: Node*
+        - _length: double
+        - _speedLimit: double
+        - _occupyingTrains: vector<Train*>
+        + Rail(start: Node*, end: Node*, length: double, speedLimit: double)
+        + getStartNode(): Node*
+        + getEndNode(): Node*
+        + getLength(): double
+        + getSpeedLimit(): double
+        + getOtherNode(node: Node*): Node*
+        + addTrain(train: Train*): void
+        + removeTrain(train: Train*): void
+        + isOccupied(): bool
+        + getTrainAhead(train: Train*, position: double): Train*
+    }
+    
+    class Train {
+        - _id: int
+        - _name: string
+        - _weight: double
+        - _frictionCoeff: double
+        - _maxAccelForce: double
+        - _maxBrakeForce: double
+        - _state: TrainState
+        - _currentSpeed: double
+        - _position: Position
+        - _path: vector<Node*>
+        + Train(...)
+        + updatePosition(timeStep: double): void
+        + calculateAcceleration(): double
+        + calculateBraking(): double
+        + hasArrived(): bool
+        + getStateString(): string
+    }
+    
+    class RailwayNetwork {
+        - _nodes: map<string, Node*>
+        - _rails: vector<Rail*>
+        + addNode(name: string): Node*
+        + getNode(name: string): Node*
+        + addRail(...): Rail*
+        + getRails(): vector<Rail*>
+        + clear(): void
+    }
+    
+    enum TrainState {
+        STATE_STOPPED
+        STATE_ACCELERATING
+        STATE_MAINTAINING
+        STATE_BRAKING
+        STATE_WAITING
+    }
+    
+    struct Time {
+        + hours: int
+        + minutes: int
+        + toString(): string
+        + addMinutes(m: int): void
+    }
+    
+    struct Position {
+        + currentRail: Rail*
+        + distanceOnRail: double
+        + lastNode: Node*
+        + nextNode: Node*
+    }
+}
+
+package "Strategy Pattern - Pathfinding" {
+    interface IPathfindingStrategy {
+        + {abstract} findPath(start: Node*, end: Node*): vector<Node*>
+    }
+    
+    class DijkstraPathfinding {
+        + findPath(start: Node*, end: Node*): vector<Node*>
+        - calculateCost(rail: Rail*): double
+    }
+    
+    IPathfindingStrategy <|.. DijkstraPathfinding
+}
+
+package "Observer Pattern" {
+    interface IObserver {
+        + {abstract} onNotify(event: string): void
+    }
+    
+    interface ISubject {
+        # _observers: vector<IObserver*>
+        + attach(observer: IObserver*): void
+        + detach(observer: IObserver*): void
+        + notify(event: string): void
+    }
+    
+    ISubject o-- IObserver : notifies >
+}
+
+package "Factory Pattern - Events" {
+    interface IEvent {
+        + {abstract} execute(): void
+        + {abstract} getDescription(): string
+    }
+    
+    class DelayEvent {
+        - _train: Train*
+        - _delayMinutes: int
+        + execute(): void
+        + getDescription(): string
+    }
+    
+    class SpeedReductionEvent {
+        - _rail: Rail*
+        - _reductionPercent: double
+        + execute(): void
+        + getDescription(): string
+    }
+    
+    class EventFactory <<Factory>> {
+        + {static} createRandomEvent(train: Train*): IEvent*
+        + {static} createRandomEvent(rail: Rail*): IEvent*
+    }
+    
+    IEvent <|.. DelayEvent
+    IEvent <|.. SpeedReductionEvent
+    EventFactory ..> IEvent : creates
+}
+
+package "Singleton Pattern - Simulation Control" {
+    class SimulationManager <<Singleton>> {
+        - {static} _instance: SimulationManager*
+        - _network: RailwayNetwork*
+        - _trains: vector<Train*>
+        - _pathfinder: IPathfindingStrategy*
+        - _currentTime: Time
+        - _timeStepMinutes: int
+        - SimulationManager()
+        + {static} getInstance(): SimulationManager*
+        + {static} destroyInstance(): void
+        + setNetwork(network: RailwayNetwork*): void
+        + addTrain(train: Train*): void
+        + setPathfindingStrategy(strategy: IPathfindingStrategy*): void
+        + initialize(): void
+        + run(): void
+        + step(): void
+        + isComplete(): bool
+        - updateTrains(): void
+        - checkCollisions(): void
+    }
+    
+    ISubject <|-- SimulationManager
+}
+
+package "Input/Output" {
+    class InputParser <<Utility>> {
+        + {static} parseNetworkFile(filename: string): RailwayNetwork*
+        + {static} parseTrainsFile(filename: string, network: RailwayNetwork*): vector<Train*>
+        + {static} printUsage(): void
+        + {static} printHelp(): void
+        - {static} trim(str: string): void
+        - {static} split(str: string, delimiter: char): vector<string>
+        - {static} parseTime(timeStr: string): Time
+    }
+    
+    class OutputWriter {
+        - _train: Train*
+        - _filename: string
+        - _snapshots: vector<SimulationSnapshot>
+        - _estimatedTime: Time
+        + OutputWriter(train: Train*)
+        + addSnapshot(snapshot: SimulationSnapshot): void
+        + writeToFile(): void
+        + onNotify(event: string): void
+        - generateVisualGraph(snapshot: SimulationSnapshot): string
+    }
+    
+    struct SimulationSnapshot {
+        + time: Time
+        + startNode: string
+        + endNode: string
+        + distanceRemaining: double
+        + action: string
+        + progressPercent: double
+    }
+    
+    IObserver <|.. OutputWriter
+    OutputWriter o-- SimulationSnapshot
+}
+
+' Relationships
+Node "1" -- "*" Rail : connected to
+Rail "*" -- "*" Train : occupies
+Train -- Position
+Train -- TrainState
+Train "*" -- "*" Node : follows path
+RailwayNetwork "1" o-- "*" Node : manages
+RailwayNetwork "1" o-- "*" Rail : manages
+SimulationManager "1" o-- "1" RailwayNetwork : uses
+SimulationManager "1" o-- "*" Train : simulates
+SimulationManager "1" o-- "1" IPathfindingStrategy : uses
+InputParser ..> RailwayNetwork : creates
+InputParser ..> Train : creates
+OutputWriter --> Train : observes
+
+note right of SimulationManager
+  **Singleton Pattern**
+  Ensures single instance
+  of simulation manager
+end note
+
+note right of IPathfindingStrategy
+  **Strategy Pattern**
+  Allows different pathfinding
+  algorithms (Dijkstra, A*, etc.)
+end note
+
+note right of ISubject
+  **Observer Pattern**
+  Events notify observers
+  (OutputWriter, etc.)
+end note
+
+note right of EventFactory
+  **Factory Pattern**
+  Creates different types
+  of random events
+end note
+
+@enduml

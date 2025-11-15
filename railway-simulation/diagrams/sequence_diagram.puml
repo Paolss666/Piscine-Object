@@ -1,0 +1,153 @@
+@startuml Railway_Simulation_Sequence_Diagram
+
+title Railway Network Simulation - Sequence Diagram (Train Journey)
+
+actor User
+participant "Main" as Main
+participant "InputParser" as Parser
+participant "RailwayNetwork" as Network
+participant "Train" as Train
+participant "SimulationManager\n<<Singleton>>" as SimMgr
+participant "DijkstraPathfinding\n<<Strategy>>" as Pathfinder
+participant "Rail" as Rail
+participant "OutputWriter\n<<Observer>>" as Writer
+
+== Initialization Phase ==
+
+User -> Main: Execute program\n(network.txt, trains.txt)
+Main -> Parser: parseNetworkFile(filename)
+Parser -> Network: new RailwayNetwork()
+activate Network
+
+Parser -> Network: addNode("CityA")
+Parser -> Network: addNode("CityB")
+Parser -> Network: addRail("CityA", "CityB", 50.0, 200.0)
+Network -> Rail: new Rail(...)
+activate Rail
+Parser <-- Network: network
+Main <-- Parser: network
+
+Main -> Parser: parseTrainsFile(filename, network)
+Parser -> Train: new Train("TrainAB", ...)
+activate Train
+Parser <-- Train: train
+Main <-- Parser: trains[]
+
+== Simulation Setup ==
+
+Main -> SimMgr: getInstance()
+activate SimMgr
+Main <-- SimMgr: instance
+
+Main -> SimMgr: setNetwork(network)
+Main -> SimMgr: addTrain(train)
+
+Main -> Writer: new OutputWriter(train)
+activate Writer
+Main -> SimMgr: attach(writer)
+
+Main -> SimMgr: setPathfindingStrategy(new DijkstraPathfinding())
+SimMgr -> Pathfinder: new DijkstraPathfinding()
+activate Pathfinder
+
+== Path Planning ==
+
+Main -> SimMgr: initialize()
+SimMgr -> Pathfinder: findPath(departure, destination)
+Pathfinder -> Network: getNode("CityA")
+Pathfinder -> Network: getNode("CityB")
+Pathfinder -> Rail: getLength()
+Pathfinder -> Rail: getSpeedLimit()
+note right of Pathfinder
+  Dijkstra's algorithm
+  calculates optimal path
+  considering distance
+  and speed limits
+end note
+SimMgr <-- Pathfinder: path[CityA, Junction, CityB]
+
+SimMgr -> Train: setPath(path)
+Train -> Rail: addTrain(this)
+
+== Simulation Loop ==
+
+Main -> SimMgr: run()
+
+loop While !isComplete()
+    
+    SimMgr -> SimMgr: step()
+    
+    == Train Update Phase ==
+    
+    SimMgr -> Train: getCurrentTime()
+    SimMgr -> Train: getPosition()
+    
+    alt Train should depart
+        SimMgr -> Train: setState(ACCELERATING)
+    end
+    
+    SimMgr -> Rail: getTrainAhead(train, position)
+    Rail --> SimMgr: trainAhead
+    
+    alt Train ahead too close
+        SimMgr -> Train: setState(BRAKING)
+        SimMgr -> Train: setCurrentSpeed(reduced)
+    else Can accelerate
+        SimMgr -> Train: calculateAcceleration()
+        Train --> SimMgr: acceleration
+        SimMgr -> Train: setCurrentSpeed(increased)
+    end
+    
+    SimMgr -> Train: updatePosition(timeStep)
+    Train -> Train: calculate new position
+    
+    alt Reached end of rail
+        Train -> Rail: removeTrain(this)
+        Train -> Rail: addTrain(this) [next rail]
+        Train -> Train: move to next path segment
+    end
+    
+    == Snapshot Recording ==
+    
+    Main -> Train: getPosition()
+    Main -> Train: getCurrentTime()
+    Main -> Train: getStateString()
+    Main -> Writer: addSnapshot(snapshot)
+    
+    == Collision Detection ==
+    
+    SimMgr -> SimMgr: checkCollisions()
+    loop For each train pair
+        alt Trains on same rail && too close
+            SimMgr -> Train: setState(STOPPED)
+            SimMgr -> Writer: onNotify("COLLISION")
+        end
+    end
+    
+    SimMgr -> SimMgr: currentTime.addMinutes(5)
+    
+end
+
+== Finalization ==
+
+Main -> Writer: setEstimatedTime(travelTime)
+Main -> Writer: writeToFile()
+Writer -> Writer: generate visual graphs
+Writer -> Writer: format output
+note right of Writer
+  Creates file:
+  TrainAB_14h10.result
+  with complete journey log
+end note
+
+Main -> SimMgr: destroyInstance()
+deactivate SimMgr
+deactivate Pathfinder
+deactivate Writer
+deactivate Train
+deactivate Rail
+deactivate Network
+
+User <-- Main: Simulation complete
+
+@enduml
