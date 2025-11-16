@@ -1,5 +1,5 @@
 #include <iostream>
-#include "incl/School.hpp"
+#include "../incl/School.hpp"
 
 int main()
 {

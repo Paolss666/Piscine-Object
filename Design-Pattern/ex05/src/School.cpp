@@ -1,5 +1,5 @@
-#include "incl/School.hpp"
-#include "incl/Form.hpp"
+#include "../incl/School.hpp"
+#include "../incl/Form.hpp"
 #include <iostream>
 
 School::School() : _classesHeld(0)

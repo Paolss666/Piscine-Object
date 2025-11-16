@@ -1,5 +1,5 @@
-#include "Course.hpp"
-#include "Person.hpp"
+#include "../incl/Course.hpp"
+#include "../incl/Person.hpp"
 #include <algorithm>
 #include <iostream>
 

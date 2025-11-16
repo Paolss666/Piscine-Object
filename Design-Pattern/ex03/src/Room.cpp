@@ -1,7 +1,7 @@
-#include "Room.hpp"
-#include "Person.hpp"
-#include "Course.hpp"
-#include "Form.hpp"
+#include "../incl/Room.hpp"
+#include "../incl/Person.hpp"
+#include "../incl/Course.hpp"
+#include "../incl/Form.hpp"
 #include <iostream>
 #include <algorithm>
 

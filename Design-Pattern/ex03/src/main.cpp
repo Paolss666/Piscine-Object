@@ -1,9 +1,9 @@
 #include <iostream>
-#include "Person.hpp"
-#include "Room.hpp"
-#include "Course.hpp"
-#include "Form.hpp"
-#include "singletons.hpp"
+#include "../incl/Person.hpp"
+#include "../incl/Room.hpp"
+#include "../incl/Course.hpp"
+#include "../incl/Form.hpp"
+#include "../incl/singletons.hpp"
 
 void demonstrateProfessorCourseCreation()
 {

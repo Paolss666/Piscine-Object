@@ -1,7 +1,7 @@
-#include "incl/Form.hpp"
-#include "incl/Person.hpp"
-#include "incl/Course.hpp"
-#include "incl/Room.hpp"
+#include "../incl/Form.hpp"
+#include "../incl/Person.hpp"
+#include "../incl/Course.hpp"
+#include "../incl/Room.hpp"
 #include <iostream>
 
 // Form implementation

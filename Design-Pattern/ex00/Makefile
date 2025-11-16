@@ -1,4 +1,4 @@
-NAME =  ex00
+NAME =ex00
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -MMD -Wno-unused -std=c++98
@@ -7,7 +7,7 @@ INC_PATH = ./incl/
 INC = -I $(INC_PATH)
 
 SRCS_PATH = ./src/
-SRC = Course.cpp, Form.cpp, Person.cpp, Room.cpp, main.cpp
+SRC = main.cpp Course.cpp Form.cpp Person.cpp Room.cpp
 SRCS = $(addprefix $(SRCS_PATH), $(SRC))
 
 OBJS_PATH = ./obj/

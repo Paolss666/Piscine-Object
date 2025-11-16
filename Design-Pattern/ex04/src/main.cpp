@@ -1,10 +1,10 @@
 #include <iostream>
-#include "incl/Person.hpp"
-#include "incl/Room.hpp"
-#include "incl/Course.hpp"
-#include "incl/Form.hpp"
-#include "incl/singletons.hpp"
-#include "incl/observer.hpp"
+#include "../incl/Person.hpp"
+#include "../incl/Room.hpp"
+#include "../incl/Course.hpp"
+#include "../incl/Form.hpp"
+#include "../incl/singletons.hpp"
+#include "../incl/observer.hpp"
 
 int main()
 {
