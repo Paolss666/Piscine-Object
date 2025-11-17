@@ -23,7 +23,9 @@ private:
     // Singleton pattern for the bell
     Bell() : _isBreakTime(false) {}
     Bell(const Bell&);
-    Bell& operator=(const Bell&);
+    Bell& operator=(const Bell&){
+        return *this;
+    };
     
 public:
     static Bell& getInstance()

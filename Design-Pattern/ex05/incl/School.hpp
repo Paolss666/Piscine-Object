@@ -7,7 +7,7 @@
 #include "../incl/Course.hpp"
 #include "../incl/Room.hpp"
 #include "../../ex01/incl/singletons.hpp"
-#include "../incl/observer.hpp"
+#include "../../ex04/incl/observer.hpp"
 
 // Facade Pattern - Simplifies complex school operations
 class School
