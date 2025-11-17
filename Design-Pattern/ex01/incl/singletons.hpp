@@ -94,7 +94,9 @@ private:
     }
     
     RoomList(const RoomList&);
-    RoomList& operator=(const RoomList&);
+    RoomList& operator=(const RoomList&){
+        return *this;
+    }
     
 public:
     static RoomList& getInstance()
