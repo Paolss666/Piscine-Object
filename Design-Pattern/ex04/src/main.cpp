@@ -3,7 +3,7 @@
 #include "../incl/Room.hpp"
 #include "../incl/Course.hpp"
 #include "../incl/Form.hpp"
-#include "../incl/singletons.hpp"
+#include "../../ex01/incl/singletons.hpp"
 #include "../incl/observer.hpp"
 
 int main()
