@@ -1,4 +1,4 @@
-NAME =  ex01
+NAME =  Singleton
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -MMD -Wno-unused -std=c++98

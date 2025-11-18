@@ -1,4 +1,4 @@
-NAME =  ex04
+NAME =  Observer
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -MMD -Wno-unused -std=c++98

@@ -1,4 +1,4 @@
-NAME =  ex02
+NAME =  FactoryCommand
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -MMD -Wno-unused -std=c++98

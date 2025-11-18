@@ -1,4 +1,4 @@
-NAME =  ex05
+NAME =  Facade
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -MMD -Wno-unused -std=c++98

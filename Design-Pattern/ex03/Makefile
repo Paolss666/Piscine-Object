@@ -1,4 +1,4 @@
-NAME =  ex03
+NAME =  Mediator
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -MMD -Wno-unused -std=c++98
