@@ -35,7 +35,7 @@ clean:
 		rm -rf $(OBJS_PATH)
 
 fclean:
-		rm -rf $(NAME) $(OBJS_PATH)
+		rm -rf $(NAME) $(OBJS_PATH) *.result
 	
 re: fclean
 		make all
