@@ -1,4 +1,4 @@
-#include "../include/InputParser.hpp"
+#include "../incl/InputParser.hpp"
 #include <fstream>
 #include <iostream>
 #include <cstdlib>

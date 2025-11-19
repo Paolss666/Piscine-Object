@@ -1,11 +1,12 @@
 #ifndef TRAIN_HPP
 #define TRAIN_HPP
 
-#include <string>
-#include <vector>
-#include "Types.hpp"
 #include "Node.hpp"
 #include "Rail.hpp"
+#include "Types.hpp"
+
+#include <string>
+#include <vector>
 
 /**
  * @class Train
@@ -73,7 +74,7 @@ public:
     
     // Methods
     void updatePosition(double timeStepMinutes);
-    double calculateAcceleration(double targetSpeed) const;
+    double calculateAcceleration(double speedLimit) const;
     double calculateBraking() const;
     bool hasArrived() const;
     void updateTotalDistance();

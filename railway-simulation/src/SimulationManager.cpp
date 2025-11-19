@@ -1,5 +1,5 @@
-#include "../include/SimulationManager.hpp"
-#include "../include/DijkstraPathfinding.hpp"
+#include "../incl/SimulationManager.hpp"
+#include "../incl/DijkstraPathfinding.hpp"
 #include <algorithm>
 #include <cmath>
 

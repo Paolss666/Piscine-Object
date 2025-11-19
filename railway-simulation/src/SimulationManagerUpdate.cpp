@@ -1,4 +1,4 @@
-#include "../include/SimulationManager.hpp"
+#include "../incl/SimulationManager.hpp"
 #include <cmath>
 #include <algorithm>
 

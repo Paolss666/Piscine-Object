@@ -1,5 +1,5 @@
-#include "../include/Rail.hpp"
-#include "../include/Train.hpp"
+#include "../incl/Rail.hpp"
+#include "../incl/Train.hpp"
 #include <algorithm>
 
 Rail::Rail(Node* start, Node* end, double length, double speedLimit)

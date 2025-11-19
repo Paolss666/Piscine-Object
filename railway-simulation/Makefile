@@ -1,67 +1,43 @@
-# Makefile for Railway Simulation (C++98)
+NAME = RailwayNetworkSimulation
 
-CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic -I./include
-LDFLAGS =
+CXX = c++
+CXXFLAGS = -Wall -Wextra -Werror -MMD -Wno-unused -std=c++98
 
-# Source files
-SRCS = src/main.cpp \
-       src/Types.cpp \
-       src/Node.cpp \
-       src/Rail.cpp \
-       src/Train.cpp \
-       src/RailwayNetwork.cpp \
-       src/SimulationManager.cpp \
-       src/SimulationManagerUpdate.cpp \
-       src/DijkstraPathfinding.cpp \
-       src/EventFactory.cpp \
-       src/InputParser.cpp \
-       src/InputParserHelp.cpp \
-       src/OutputWriter.cpp
+INC_PATH = ./incl/
+INC = -I $(INC_PATH)
 
-# Object files
-OBJS = $(SRCS:.cpp=.o)
+SRCS_PATH = ./src/
+SRC = main.cpp DijkstraPathfinding.cpp EventFactory.cpp InputParser.cpp InputParserHelp.cpp Node.cpp \
+	   OutputWriter.cpp Rail.cpp RailwayNetwork.cpp SimulationManager.cpp SimulationManagerUpdate.cpp  \
+	   Train.cpp Types.cpp
+SRCS = $(addprefix $(SRCS_PATH), $(SRC))
 
-# Executable name
-TARGET = railway_simulation
+OBJS_PATH = ./obj/
+OBJ = $(SRC:.cpp=.o)
+OBJS = $(addprefix $(OBJS_PATH), $(OBJ))
 
-# Default target
-all: $(TARGET)
+DEPS = $(OBJS:.o=.d)
 
-# Link
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-	@echo "Build complete: $(TARGET)"
+all: $(OBJS_PATH) $(NAME)
 
-# Compile
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(OBJS_PATH):
+	mkdir -p $(OBJS_PATH)
 
-# Clean
+$(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp
+		${CXX} ${CXXFLAGS} -c $< -o $@ $(INC)
+
+$(NAME) : $(OBJS)
+		$(CXX) $(CXXFLAGS) $(OBJS) -o $@ $(INC)
+
+-include $(DEPS)
+
 clean:
-	rm -f $(OBJS) $(TARGET)
-	rm -f output/*.result
-	@echo "Clean complete"
+		rm -rf $(OBJS_PATH)
 
-fclean: clean
-	rm -f $(TARGET)
+fclean:
+		rm -rf $(NAME) $(OBJS_PATH)
+	
+re: fclean
+		make all
 
-# Rebuild
-re: fclean all
-
-# Run with example files
-run: $(TARGET)
-	./$(TARGET) examples/network.txt examples/trains.txt
-
-# Help
-help:
-	./$(TARGET) --help
-
-# Test
-test: $(TARGET)
-	@echo "Running simulation..."
-	./$(TARGET) examples/network.txt examples/trains.txt
-	@echo "\nChecking output files..."
-	@ls -lh output/
-
-.PHONY: all clean fclean re run help test
+.PHONY: all clean fclean re

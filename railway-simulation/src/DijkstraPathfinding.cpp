@@ -1,5 +1,5 @@
-#include "../include/DijkstraPathfinding.hpp"
-#include "../include/Rail.hpp"
+#include "../incl/DijkstraPathfinding.hpp"
+#include "../incl/Rail.hpp"
 #include <map>
 #include <set>
 #include <vector>

@@ -1,4 +1,4 @@
-#include "../include/Train.hpp"
+#include "../incl/Train.hpp"
 #include <cmath>
 #include <algorithm>
 
@@ -47,7 +47,7 @@ void Train::updateTotalDistance() {
     }
 }
 
-double Train::calculateAcceleration(double targetSpeed) const {
+double Train::calculateAcceleration(double speedLimit) const {
     // F = ma => a = F/m
     // Account for friction: F_net = F_accel - F_friction
     // F_friction = μ * m * g (where g ≈ 9.81 m/s²)
@@ -57,6 +57,9 @@ double Train::calculateAcceleration(double targetSpeed) const {
     double netForce = _maxAccelForce - frictionForce;
     
     if (netForce <= 0) {
+        return 0.0;
+    }
+    if (_currentSpeed >= speedLimit) {
         return 0.0;
     }
     

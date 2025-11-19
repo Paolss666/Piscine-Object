@@ -1,5 +1,5 @@
-#include "../include/Node.hpp"
-#include "../include/Rail.hpp"
+#include "../incl/Node.hpp"
+#include "../incl/Rail.hpp"
 
 Node::Node(const std::string& name) 
     : _name(name), _isCity(false) {

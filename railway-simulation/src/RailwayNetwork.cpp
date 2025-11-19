@@ -1,4 +1,4 @@
-#include "../include/RailwayNetwork.hpp"
+#include "../incl/RailwayNetwork.hpp"
 
 RailwayNetwork::RailwayNetwork() {
 }

@@ -1,7 +1,7 @@
-#include "include/SimulationManager.hpp"
-#include "include/InputParser.hpp"
-#include "include/OutputWriter.hpp"
-#include "include/DijkstraPathfinding.hpp"
+#include "../incl/SimulationManager.hpp"
+#include "../incl/InputParser.hpp"
+#include "../incl/OutputWriter.hpp"
+#include "../incl/DijkstraPathfinding.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>

@@ -1,4 +1,4 @@
-#include "../include/OutputWriter.hpp"
+#include "../incl/OutputWriter.hpp"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -23,6 +23,7 @@ void OutputWriter::setEstimatedTime(const Time& time) {
 }
 
 void OutputWriter::onNotify(const std::string& event) {
+    std::cout << "OutputWriter notified of event: " << event << std::endl;
     // Could log events
 }
 

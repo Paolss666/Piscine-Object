@@ -4,14 +4,14 @@
 #include "Node.hpp"
 #include "Types.hpp"
 #include <vector>
+#include "Train.hpp"  
 
 /**
- * @class Rail
- * @brief Represents a rail segment between two nodes
  * 
  * Encapsulates rail properties including length, speed limit,
  * and connected nodes. Manages train occupation.
  */
+class Train; // Forward declaration
 class Rail {
 private:
     Node* _startNode;
