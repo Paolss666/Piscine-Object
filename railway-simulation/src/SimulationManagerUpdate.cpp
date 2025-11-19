@@ -6,7 +6,7 @@
 
 void SimulationManager::step() {
     updateTrains();
-    checkCollisions();
+    // checkCollisions();
     handleTrainInteractions();
     
     _currentTime.addMinutes(_timeStepMinutes);
@@ -93,7 +93,7 @@ void SimulationManager::updateTrains() {
         train->updatePosition(_timeStepMinutes);
     }
 }
-
+/* 
 void SimulationManager::checkCollisions() {
     // Simple collision detection
     for (size_t i = 0; i < _trains.size(); ++i) {
@@ -119,7 +119,7 @@ void SimulationManager::checkCollisions() {
             }
         }
     }
-}
+} */
 
 void SimulationManager::handleTrainInteractions() {
     // Overtaking system - simplified

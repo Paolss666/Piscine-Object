@@ -37,8 +37,13 @@ Time InputParser::parseTime(const std::string& timeStr) {
     }
     
     int hours = atoi(timeStr.substr(0, hPos).c_str());
+    if (hours < 0 || hours > 24) {
+        throw std::runtime_error("Invalid hours in time: " + timeStr);
+    }   
+    if (hours == 0 ){
+        hours = 24;
+    }
     int minutes = atoi(timeStr.substr(hPos + 1).c_str());
-    
     return Time(hours, minutes);
 }
 

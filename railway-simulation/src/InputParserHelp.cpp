@@ -47,7 +47,10 @@ std::vector<Train*> InputParser::parseTrainsFile(const std::string& filename,
             std::string depName = tokens[5];
             std::string destName = tokens[6];
             Time depTime = parseTime(tokens[7]);
+            std::cout << "Parsing stop duration: " << depTime.toString() << std::endl;
             Time stopDuration = parseTime(tokens[8]);
+            // std::cout << "Token for stop duration: " << tokens[8] << std::endl;
+            std::cout << "Parsed stop duration: " << stopDuration.toString() << std::endl;
             
             // Validation
             if (weight <= 0) {

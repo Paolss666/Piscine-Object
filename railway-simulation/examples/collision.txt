@@ -3,20 +3,8 @@ Node CityB
 Node CityC
 Node CityD
 Node Junction
-Node RailNodeA
-Node RailNodeB
-Node RailNodeC
-Node RailNodeD
 
-Rail CityA RailNodeA 10.0 200.0
-Rail RailNodeA Junction 15.0 180.0
-Rail Junction RailNodeB 12.0 180.0
-Rail RailNodeB CityB 8.0 150.0
-
-Rail CityC RailNodeC 9.0 200.0
-Rail RailNodeC Junction 14.0 180.0
-Rail Junction RailNodeD 11.0 180.0
-Rail RailNodeD CityD 7.0 150.0
-
-Rail Junction CityA 25.0 220.0
-Rail Junction CityB 20.0 200.0
+Rail CityA Junction 5.0 200.0
+Rail Junction CityB 8.0 180.0
+Rail CityC Junction 6.0 200.0
+Rail Junction CityD 7.0 180.0

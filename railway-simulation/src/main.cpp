@@ -93,8 +93,8 @@ void runSimulation(RailwayNetwork* network, std::vector<Train*>& trains) {
     SimulationManager::destroyInstance();
 }
 
-int main(int argc, char* argv[]) {
-    srand(time(NULL));
+int main(int argc, char** argv) {
+    // srand(time(NULL));
     
     // Check arguments
     if (argc == 2 && std::string(argv[1]) == "--help") {
