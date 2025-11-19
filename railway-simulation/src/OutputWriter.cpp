@@ -23,7 +23,7 @@ void OutputWriter::setEstimatedTime(const Time& time) {
 }
 
 void OutputWriter::onNotify(const std::string& event) {
-    std::cout << "OutputWriter notified of event: " << event << std::endl;
+    (void)event;
     // Could log events
 }
 
