@@ -23,13 +23,12 @@ struct SimulationSnapshot {
     
     SimulationSnapshot() : distanceRemaining(0), progressPercent(0), railLength(0) {}
 };
-
 /**
  * @class OutputWriter
- * @brief Writes simulation results to output files
+ * @brief Observes Train and logs simulation data
  * 
- * Implements Observer Pattern to record simulation events.
- * SOLID: Single Responsibility - handles output only
+ * Implements Observer pattern to monitor Train state changes.
+ * Records snapshots and generates output files for analysis.
  */
 class OutputWriter : public IObserver {
 private:

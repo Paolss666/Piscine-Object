@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-
+#include <cmath>
 OutputWriter::OutputWriter(Train* train) : _train(train) {
     if (train != NULL) {
         std::ostringstream oss;
@@ -38,47 +38,54 @@ std::string OutputWriter::formatNode(const std::string& nodeName) const {
 std::string OutputWriter::generateVisualGraph(const SimulationSnapshot& snapshot) const {
     std::ostringstream oss;
     
-    // The graph represents the CURRENT rail segment only (from startNode to endNode)
     // One cell per kilometer of THIS segment
-    int totalCells = static_cast<int>(snapshot.railLength);
-    if (totalCells < 1) totalCells = 1;
+    int totalCells = std::max(1, static_cast<int>(std::ceil(snapshot.railLength)));
     if (totalCells > 50) totalCells = 50; // Limit visual size
     
-    // Calculate train position on THIS segment
-    // progressPercent should be: (distance_traveled_on_segment / segment_length) * 100
-    // OR: 100 - (distance_remaining_on_segment / segment_length) * 100
-    
-    // If you're tracking distance remaining on the segment:
+    // Calculate train position on THIS segment (distance traveled from start)
     double distanceOnSegment = snapshot.railLength - snapshot.distanceRemaining;
-    if (distanceOnSegment < 0) distanceOnSegment = 0;
+    if (distanceOnSegment < 0.0) distanceOnSegment = 0.0;
     if (distanceOnSegment > snapshot.railLength) distanceOnSegment = snapshot.railLength;
     
-    double progressOnSegment = (distanceOnSegment / snapshot.railLength) * 100.0;
-    int trainPosition = static_cast<int>((progressOnSegment / 100.0) * totalCells);
+    int trainCell = static_cast<int>(std::floor(distanceOnSegment));
+    if (trainCell >= totalCells) trainCell = totalCells - 1;
+    if (trainCell < 0) trainCell = 0;
     
-    if (trainPosition >= totalCells) trainPosition = totalCells - 1;
-    if (trainPosition < 0) trainPosition = 0;
+    // Mark other trains (robustly accept km, percent (0-100), or fraction (0-1))
+    std::vector<bool> otherAt(totalCells, false);
+    for (size_t j = 0; j < snapshot.otherTrainPositions.size(); ++j) {
+        double p = snapshot.otherTrainPositions[j];
+        double posKm = 0.0;
+        if (p < 0.0) continue;
+        const double eps = 1e-6;
+        if (p <= snapshot.railLength + eps) {
+            // provided in kilometers
+            posKm = p;
+        } else if (p <= 1.0 + eps) {
+            // fraction of segment (0..1)
+            posKm = p * snapshot.railLength;
+        } else if (p <= 100.0 + eps) {
+            // percent (0..100)
+            posKm = (p / 100.0) * snapshot.railLength;
+        } else {
+            // fallback treat as kilometers
+            posKm = p;
+        }
+        if (posKm < 0.0) continue;
+        if (posKm > snapshot.railLength) posKm = snapshot.railLength;
+        int otherCell = static_cast<int>(std::floor(posKm));
+        if (otherCell >= totalCells) otherCell = totalCells - 1;
+        if (otherCell >= 0 && otherCell < totalCells) otherAt[otherCell] = true;
+    }
     
     for (int i = 0; i < totalCells; ++i) {
-        if (i == trainPosition) {
+        if (otherAt[i]) {
+            // Other train blocks this cell (show 'O'). If both present, O takes precedence.
+            oss << "[O]";
+        } else if (i == trainCell) {
             oss << "[x]";
         } else {
-            // Check if another train is here
-            bool otherTrainHere = false;
-            for (size_t j = 0; j < snapshot.otherTrainPositions.size(); ++j) {
-                // otherTrainPositions should contain positions on THIS segment (0-100%)
-                int otherPos = static_cast<int>((snapshot.otherTrainPositions[j] / 100.0) * totalCells);
-                if (i == otherPos) {
-                    otherTrainHere = true;
-                    break;
-                }
-            }
-            
-            if (otherTrainHere) {
-                oss << "[O]";
-            } else {
-                oss << "[ ]";
-            }
+            oss << "[ ]";
         }
     }
     

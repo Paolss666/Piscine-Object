@@ -34,6 +34,10 @@ void runSimulation(RailwayNetwork* network, std::vector<Train*>& trains) {
     int maxIterations = 5000;
     int iteration = 0;
     
+    // Track if trains have started moving
+    std::vector<bool> hasStartedMoving(trains.size(), false);
+    std::vector<Time> actualDepartureTime(trains.size());
+    
     while (!sim->isComplete() && iteration < maxIterations) {
         sim->step();
         
@@ -41,13 +45,33 @@ void runSimulation(RailwayNetwork* network, std::vector<Train*>& trains) {
         for (size_t i = 0; i < trains.size(); ++i) {
             Train* train = trains[i];
             
-            if (train->getCurrentTime() < train->getDepartureTime()) {
-                continue; // Not departed yet
+            // Check if train should have departed but hasn't moved
+            if (train->getCurrentTime() >= train->getDepartureTime()) {
+                if (!hasStartedMoving[i] && train->getState() != STATE_STOPPED) {
+                    hasStartedMoving[i] = true;
+                    actualDepartureTime[i] = train->getCurrentTime();
+                    std::cout << "  Train " << train->getName() 
+                              << " started moving at " << train->getCurrentTime().toString()
+                              << " (scheduled: " << train->getDepartureTime().toString() << ")"
+                              << std::endl;
+                }
+                
+                // Debug: Check why train is stuck
+                if (!hasStartedMoving[i] && iteration % 50 == 0) {
+                    std::cout << "  WARNING: Train " << train->getName() 
+                              << " still stopped at " << train->getCurrentTime().toString()
+                              << " (scheduled departure: " << train->getDepartureTime().toString() << ")"
+                              << " State: " << train->getStateString()
+                              << std::endl;
+                }
             }
             
             const Position& pos = train->getPosition();
             
-            if (pos.currentRail != NULL && iteration % 1 == 0) { // Record every step
+            // Only record snapshots after departure time
+            if (train->getCurrentTime() >= train->getDepartureTime() && 
+                pos.currentRail != NULL && iteration % 1 == 0) {
+                
                 SimulationSnapshot snapshot;
                 snapshot.time = train->getCurrentTime();
                 snapshot.startNode = pos.lastNode ? pos.lastNode->getName() : "";
@@ -56,6 +80,36 @@ void runSimulation(RailwayNetwork* network, std::vector<Train*>& trains) {
                 snapshot.action = train->getStateString();
                 snapshot.railLength = pos.currentRail->getLength();
                 snapshot.progressPercent = (pos.distanceOnRail / pos.currentRail->getLength()) * 100.0;
+                
+                // Populate other train positions
+                snapshot.otherTrainPositions.clear();
+                
+                for (size_t j = 0; j < trains.size(); ++j) {
+                    if (i == j) continue;
+                    
+                    Train* otherTrain = trains[j];
+                    
+                    // Check if other train has departed
+                    if (otherTrain->getCurrentTime() < otherTrain->getDepartureTime()) {
+                        continue;
+                    }
+                    
+                    const Position& otherPos = otherTrain->getPosition();
+                    
+                    // Check if other train has a valid current rail
+                    if (otherPos.currentRail == NULL) {
+                        continue;
+                    }
+                    
+                    // Check if on the same rail segment
+                    if (otherPos.currentRail == pos.currentRail &&
+                        otherPos.lastNode == pos.lastNode &&
+                        otherPos.nextNode == pos.nextNode) {
+                        
+                        // Add the other train's position in kilometers
+                        snapshot.otherTrainPositions.push_back(otherPos.distanceOnRail);
+                    }
+                }
                 
                 writers[i]->addSnapshot(snapshot);
             }
@@ -73,16 +127,51 @@ void runSimulation(RailwayNetwork* network, std::vector<Train*>& trains) {
     std::cout << "\n=== Simulation Complete ===" << std::endl;
     std::cout << "Total iterations: " << iteration << std::endl;
     
-    // Calculate final times and write outputs
+    // Calculate final times and write outputs with proper day handling
     for (size_t i = 0; i < trains.size(); ++i) {
-        Time travelTime = trains[i]->getCurrentTime();
-        travelTime.addMinutes(-trains[i]->getDepartureTime().toMinutes());
+        // Get arrival and departure times
+        Time arrivalTime = trains[i]->getCurrentTime();
+        Time departureTime = trains[i]->getDepartureTime();
+        
+        // Convert to minutes for calculation
+        int arrivalMinutes = arrivalTime.toMinutes();
+        int departureMinutes = departureTime.toMinutes();
+        
+        // Handle day rollover (if arrival is next day)
+        // This assumes the train journey is less than 24 hours
+        if (arrivalMinutes < departureMinutes) {
+            arrivalMinutes += 24 * 60; // Add 24 hours for next day
+        }
+        
+        // Calculate travel time in minutes
+        int travelMinutes = arrivalMinutes - departureMinutes;
+        
+        // Convert back to hours and minutes
+        int travelHours = travelMinutes / 60;
+        int travelMins = travelMinutes % 60;
+        
+        // Create proper travel time (handle cases over 24 hours if needed)
+        Time travelTime(travelHours, travelMins);
         
         writers[i]->setEstimatedTime(travelTime);
         writers[i]->writeToFile();
         
-        std::cout << "Train " << trains[i]->getName() 
-                  << " - Travel time: " << travelTime.toString() << std::endl;
+        std::cout << "\nTrain " << trains[i]->getName() << " Summary:"
+                  << "\n  Scheduled departure: " << departureTime.toString()
+                  << "\n  Actual departure: " << (hasStartedMoving[i] ? 
+                        actualDepartureTime[i].toString() : "Never departed")
+                  << "\n  Arrival: " << arrivalTime.toString();
+        
+        // Show if arrival is next day
+        if (arrivalTime.toMinutes() < departureTime.toMinutes()) {
+            std::cout << " (next day)";
+        }
+        
+        std::cout << "\n  Travel time: " << travelTime.toString() 
+                  << " (" << travelMinutes << " minutes)" << std::endl;
+                  
+        // Check if train is still at origin
+        const Position& finalPos = trains[i]->getPosition();
     }
     
     // Cleanup
@@ -128,6 +217,8 @@ int main(int argc, char** argv) {
         delete network;
         return 1;
     }
+    
+    // Print train information
     
     // Run simulation
     try {

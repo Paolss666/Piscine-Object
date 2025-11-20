@@ -61,7 +61,7 @@ public:
     
 private:
     void updateTrains();
-    // void checkCollisions();
+    void checkCollisions();
     void handleTrainInteractions();
 };
 

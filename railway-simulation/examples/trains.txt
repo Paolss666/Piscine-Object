@@ -5,7 +5,9 @@
 TrainAB 80 0.05 356.0 30.0 CityA CityB 14h10 00h10
 
 # Train from City A to City C  
-TrainAC 80 0.05 412.0 40.0 CityA CityC 14h10 00h10
+TrainAC 80 0.05 412.0 40.0 CityA CityC 14h30 00h10
 
 # Another train from City A to City B (testing collision avoidance)
-TrainBA 40 0.05 356.0 30.0 CityA CityB 14h24 00h10
+TrainBA 40 0.05 356.0 30.0 CityA CityB 17h30 00h10
+
+TrainBlock 50 0.05 300.0 30.0 CityA CityB 14h11 00h10
